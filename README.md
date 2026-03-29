@@ -117,13 +117,4 @@ The repository now includes a GitHub Actions workflow that:
 - runs `npm run test:ci`
 - runs `npm run build`
 
-## Notes
 
-- The project still uses Create React App 4, so the npm scripts explicitly enable the OpenSSL legacy provider for compatibility with modern Node versions.
-- The app depends on the REST Countries API being reachable at runtime.
-
-## Future Improvements
-
-- Add pagination or result virtualization for very large datasets
-- Add unit tests for search and filter interactions
-- Add dark/light theme switching if design requirements call for it

@@ -1,103 +1,99 @@
-import React, { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import Filter from "./Filter"
+import React, { useState } from "react";
+import CountryCard from "../components/CountryCard";
+import StatusPanel from "../components/StatusPanel";
+import { getRegions } from "../utils/countries";
+import Filter from "./Filter";
 
-const url = "https://restcountries.eu/rest/v2/all"
+const Countries = ({ countries, isLoading, error, reload }) => {
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState("All");
 
-const Countries = () => {
-  const [countries, setCountries] = useState([])
-  const [filtered, setFiltered] = useState([])
-  const [searchInput, setSearchInput] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
+  const normalizedSearch = searchInput.trim().toLowerCase();
+  const regions = getRegions(countries);
+  const filteredCountries = countries.filter((country) => {
+    const matchesSearch =
+      !normalizedSearch ||
+      [
+        country.name,
+        country.officialName,
+        country.region,
+        country.subregion,
+        country.capital.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedSearch);
 
-  useEffect(() => {
-    const fetchCountries = async () => {
-      const response = await fetch(url)
-      const countries = await response.json()
-      setCountries(countries)
-      setIsLoading(false)
-    }
+    const matchesRegion =
+      selectedRegion === "All" || country.region === selectedRegion;
 
-    fetchCountries()
-  }, [])
-
+    return matchesSearch && matchesRegion;
+  });
 
   return (
-    <>
+    <main className="page-shell">
+      <header className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">Country Explorer</p>
+          <h1>Browse every country from one clean dashboard.</h1>
+          <p className="hero-text">
+            Search by country name, capital city, or region, then open a full
+            profile with borders, languages, currencies, and domain details.
+          </p>
+        </div>
+
+        <div className="hero-stats">
+          <article>
+            <strong>{countries.length || "250+"}</strong>
+            <span>countries indexed</span>
+          </article>
+          <article>
+            <strong>{Math.max(regions.length - 1, 0)}</strong>
+            <span>regions available</span>
+          </article>
+          <article>
+            <strong>{filteredCountries.length}</strong>
+            <span>results shown</span>
+          </article>
+        </div>
+      </header>
+
       <Filter
         searchInput={searchInput}
         setSearchInput={setSearchInput}
-        setFiltered={setFiltered}
-        setCountries={setCountries}
-        countries={countries}
+        selectedRegion={selectedRegion}
+        setSelectedRegion={setSelectedRegion}
+        regions={regions}
+        resultsCount={filteredCountries.length}
       />
-      {isLoading ? (
-        <h1 className="loading">Loading...</h1>
-      ) : searchInput.length > 1 ? (
-        <section className="countries">
-          {filtered.map((country) => {
-            const { numericCode, name, flag, population, region, capital } =
-              country
 
-            return (
-              <Link to={`/countries/${name}`} key={numericCode}>
-                <article>
-                  <div className="flag">
-                    <img src={flag} alt={name} />
-                  </div>
-                  <div className="details">
-                    <h4 className="country-name">
-                      Name: <span>{name}</span>
-                    </h4>
-                    <h4>
-                      Population: <span>{population.toLocaleString()}</span>
-                    </h4>
-                    <h4>
-                      Region: <span>{region}</span>
-                    </h4>
-                    <h4>
-                      Capital: <span>{capital}</span>
-                    </h4>
-                  </div>
-                </article>
-              </Link>
-            )
-          })}
+      {isLoading ? (
+        <StatusPanel
+          title="Loading countries"
+          message="Pulling the latest country dataset into the explorer."
+        />
+      ) : error ? (
+        <StatusPanel
+          title="Could not load country data"
+          message={error}
+          actionLabel="Try again"
+          onAction={reload}
+        />
+      ) : filteredCountries.length ? (
+        <section className="countries-grid">
+          {filteredCountries.map((country) => (
+            <CountryCard key={country.code} country={country} />
+          ))}
         </section>
       ) : (
-        <section className="countries">
-          {countries.map((country) => {
-            const { numericCode, name, flag, population, region, capital } =
-              country
-
-            return (
-              <Link to={`/countries/${name}`} key={numericCode}>
-                <article>
-                  <div className="flag">
-                    <img src={flag} alt={name} />
-                  </div>
-                  <div className="details">
-                    <h4 className="country-name">
-                      Name: <span>{name}</span>
-                    </h4>
-                    <h4>
-                      Population: <span>{population.toLocaleString()}</span>
-                    </h4>
-                    <h4>
-                      Region: <span>{region}</span>
-                    </h4>
-                    <h4>
-                      Capital: <span>{capital}</span>
-                    </h4>
-                  </div>
-                </article>
-              </Link>
-            )
-          })}
-        </section>
+        <StatusPanel
+          title="No countries matched your filters"
+          message="Try a different search term or switch back to all regions."
+          compact
+        />
       )}
-    </>
-  )
-}
+    </main>
+  );
+};
 
-export default Countries
+export default Countries;

@@ -1,52 +1,53 @@
-
+import React from "react";
 
 const Filter = ({
   searchInput,
   setSearchInput,
-  setFiltered,
-  setCountries,
-  countries,
+  selectedRegion,
+  setSelectedRegion,
+  regions,
+  resultsCount,
 }) => {
-  
-
-  // Prevent page reload when submitting the form
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
-
-  // Search countries
-  const searchCountries = (searchValue) => {
-    setSearchInput(searchValue)
-
-    if (searchInput) {
-      const filteredCountries = countries.filter((country) =>
-        Object.values(country)
-          .join("")
-          .toLowerCase()
-          .includes(searchValue.toLowerCase())
-      )
-      setFiltered(filteredCountries)
-    } else {
-      setFiltered(countries)
-    }
-  }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  };
 
   return (
-    <>
-      <form className="form" id="form" onSubmit={handleSubmit}>
+    <form className="filters" onSubmit={handleSubmit}>
+      <label className="field" htmlFor="search">
+        <span>Search</span>
         <input
+          id="search"
           type="search"
           name="search"
-          id="search"
           autoComplete="off"
-          placeholder="Search Country"
-          onChange={(e) => searchCountries(e.target.value)}
+          placeholder="Search by country, capital, or region"
+          value={searchInput}
+          onChange={(event) => setSearchInput(event.target.value)}
         />
+      </label>
 
-        
-      </form>
-    </>
-  )
-}
+      <label className="field" htmlFor="region">
+        <span>Region</span>
+        <select
+          id="region"
+          name="region"
+          value={selectedRegion}
+          onChange={(event) => setSelectedRegion(event.target.value)}
+        >
+          {regions.map((region) => (
+            <option key={region} value={region}>
+              {region}
+            </option>
+          ))}
+        </select>
+      </label>
 
-export default Filter
+      <p className="filter-summary">
+        <strong>{resultsCount}</strong> countries visible
+      </p>
+    </form>
+  );
+};
+
+export default Filter;

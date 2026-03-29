@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+# Country Explorer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Country Explorer is a React application for browsing countries, filtering them by region, and opening a dedicated details view for each country. It uses the current REST Countries API, normalizes the API response in one place, and presents the data through a cleaner, production-ready interface than the original scaffold.
+
+## Project Intro
+
+This project started as a basic Create React App setup with an unfinished routing flow and an outdated API endpoint. It has now been completed into a working country browser that focuses on:
+
+- fast country search by name, capital, or region
+- region-based filtering
+- detailed country profile pages
+- clear loading, empty, and error states
+- simple CI validation for GitHub
+
+## Features
+
+- Browse all countries from a responsive card-based homepage
+- Search using country names, official names, capitals, or regions
+- Filter results by geographic region
+- Open a details page for each country using its stable country code
+- View capital city, population, region, subregion, languages, currencies, top-level domains, and border countries
+- Retry data loading if the API request fails
+- Run tests and production builds in local development and in GitHub Actions
+
+## Tech Stack
+
+- React 17
+- React Router DOM 5
+- Create React App tooling
+- Testing Library
+- REST Countries API
+
+## What Was Fixed
+
+- Replaced the deprecated `restcountries.eu` endpoint with the current `restcountries.com` API
+- Finished the routing layer with a working country details page and a 404 fallback route
+- Removed unused scaffold files and generic CRA placeholder content
+- Added a real `.gitignore`
+- Replaced the unrelated Deno workflow with a Node-based CI workflow
+- Updated npm scripts so the project works with the current Node/OpenSSL runtime
+- Rewrote the default test so it validates actual app behavior
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or newer
+- npm 9 or newer
+
+### Installation
+
+```bash
+npm install
+```
+
+### Start the development server
+
+```bash
+npm start
+```
+
+The app runs on `http://localhost:3000`.
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Starts the development server.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Creates an optimized production build inside the `build/` directory.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### `npm test`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Starts the Jest watcher used during development.
 
-### `npm run eject`
+### `npm run test:ci`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Runs the tests once in CI mode without watch mode.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```text
+src/
+  components/
+    CountryCard.js
+    StatusPanel.js
+  containers/
+    Countries.js
+    CountryDetails.js
+    Filter.js
+    NotFound.js
+  hooks/
+    useCountries.js
+  utils/
+    countries.js
+  App.js
+  App.test.js
+  index.css
+  index.js
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Data Source
 
-## Learn More
+Country data is loaded from:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+`https://restcountries.com/v3.1/all`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The app requests only the fields it needs and normalizes the response before rendering it.
 
-### Code Splitting
+## GitHub Workflow
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The repository now includes a GitHub Actions workflow that:
 
-### Analyzing the Bundle Size
+- installs dependencies with `npm ci`
+- runs `npm run test:ci`
+- runs `npm run build`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Notes
 
-### Making a Progressive Web App
+- The project still uses Create React App 4, so the npm scripts explicitly enable the OpenSSL legacy provider for compatibility with modern Node versions.
+- The app depends on the REST Countries API being reachable at runtime.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Future Improvements
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Add pagination or result virtualization for very large datasets
+- Add unit tests for search and filter interactions
+- Add dark/light theme switching if design requirements call for it
